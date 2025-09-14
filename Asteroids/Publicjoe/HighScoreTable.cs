@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
@@ -11,13 +12,12 @@ namespace Publicjoe.Windows
   /// </summary>
   public class HighScoreTable
   {
-    private ArrayList table;
+    private List<HighScoreEntry> table = new List<HighScoreEntry>();
 
     private bool isLoaded;
   
     public HighScoreTable()
     {
-      table = new ArrayList();
       isLoaded = false;
     }
   
@@ -25,15 +25,15 @@ namespace Publicjoe.Windows
     {
       if( File.Exists( path ) )
       {
-        table = new ArrayList();
-  
-        using( StreamReader textStream = new StreamReader(path, Encoding.UTF8) )
+        table = new List<HighScoreEntry>();
+
+        using ( var textStream = new StreamReader(path, Encoding.UTF8) )
         {
           string scoreLine;
   
           while( (scoreLine = textStream.ReadLine()) != null )
           {
-            string[] scoreParts = scoreLine.Split(',');
+            var scoreParts = scoreLine.Split(',');
   
             if( scoreParts.Length != 2 )
             {
@@ -44,7 +44,6 @@ namespace Publicjoe.Windows
               table.Add(new HighScoreEntry(scoreParts[0],Int32.Parse(scoreParts[1])));
             }
           }
-          textStream.Close();
         }
       }
       else
@@ -65,25 +64,21 @@ namespace Publicjoe.Windows
         File.Delete( path );
       }
   
-      using( StreamWriter textStream = new StreamWriter(path,false, Encoding.UTF8) )
+      using( var textStream = new StreamWriter(path,false, Encoding.UTF8) )
       {
-        foreach( object tableEntry in table )
-        { 
-          HighScoreEntry highScoreEntry = tableEntry as HighScoreEntry;
-  
-          textStream.WriteLine("{0},{1}",highScoreEntry.name,highScoreEntry.score );
+        foreach (var highScoreEntry in table)
+        {
+          textStream.WriteLine($"{highScoreEntry.Name},{highScoreEntry.Score}");
         }
-        textStream.Close();
       }
     }
   
     public int GetIndexOfScore( int score )
     {
-      for( int index = 0; index < table.Count; index++ )
+      for (int index = 0; index < table.Count; index++)
       {
-        HighScoreEntry highScoreEntry = table[index] as HighScoreEntry;
-  
-        if( score > highScoreEntry.score && index < 10)
+        var highScoreEntry = table[index];
+        if (score > highScoreEntry.Score && index < 10)
         {
           return index;
         }
@@ -93,26 +88,25 @@ namespace Publicjoe.Windows
   
     public void Update( string name, int score )
     {
-      if( !isLoaded ) Load( Application.StartupPath+@"\score.txt" );
-  
-      int index = GetIndexOfScore( score );
-  
-      if( index > -1 )
+      if (!isLoaded) Load(Application.StartupPath + @"\score.txt");
+
+      int index = GetIndexOfScore(score);
+
+      if (index > -1)
       {
-        if( table.Count > 9 ) table.RemoveAt( 9 );
-        table.Insert( index, new HighScoreEntry( name, score ) );
-        Save( Application.StartupPath+@"\score.txt" );
+        if (table.Count > 9) table.RemoveAt(9);
+        table.Insert(index, new HighScoreEntry(name, score));
+        Save(Application.StartupPath + @"\score.txt");
       }
     }
   
     public void Populate( ListView listView )
     {
       listView.Items.Clear();
-  
-      foreach( object entry in table )
+
+      foreach (var highScoreEntry in table)
       {
-        HighScoreEntry highScoreEntry = entry as HighScoreEntry;
-        listView.Items.Add( new ListViewItem( new string[] { highScoreEntry.name, highScoreEntry.score.ToString() } ));
+        listView.Items.Add(new ListViewItem(new[] { highScoreEntry.Name, highScoreEntry.Score.ToString() }));
       }
     }
   }

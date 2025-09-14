@@ -5,13 +5,13 @@ namespace Publicjoe.Windows
   /// </summary>
   public class HighScoreEntry
   {
-    public string name;
-    public int score;
-    
+    public string Name { get; set; }
+    public int Score { get; set; }
+
     public HighScoreEntry( string name, int score )
     {
-      this.name = name;
-      this.score = score;
+      Name = name;
+      Score = score;
     }
   }
 }
