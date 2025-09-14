@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -13,7 +12,6 @@ namespace Publicjoe.Windows
   public class HighScoreTable
   {
     private List<HighScoreEntry> table = new List<HighScoreEntry>();
-
     private bool isLoaded;
   
     public HighScoreTable()
@@ -33,16 +31,11 @@ namespace Publicjoe.Windows
   
           while( (scoreLine = textStream.ReadLine()) != null )
           {
-            var scoreParts = scoreLine.Split(',');
-  
+            var scoreParts = scoreLine.Split(',');  
             if( scoreParts.Length != 2 )
-            {
               throw new ApplicationException("Score file corrupt!");
-            }
-            else
-            {
-              table.Add(new HighScoreEntry(scoreParts[0],Int32.Parse(scoreParts[1])));
-            }
+
+            table.Add(new HighScoreEntry(scoreParts[0],Int32.Parse(scoreParts[1])));
           }
         }
       }
