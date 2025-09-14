@@ -70,7 +70,7 @@ namespace Asteroids
     public const int STORM_PAUSE = 30;
     public const int UFO_PASSES = 3;
 
-    /// <summary>Asteroid shape and size ranges.</summary>
+    /// <summary>Asteroid Shape and size ranges.</summary>
     public const int MIN_ROCK_SIDES = 8;
     public const int MAX_ROCK_SIDES = 12;
     public const int MIN_ROCK_SIZE = 20;
@@ -141,7 +141,7 @@ namespace Asteroids
     /// <summary>Time counter for life of a photon.</summary>
     int[] photonCounter = new int[MAX_SHOTS];
 
-    /// <summary>Next available photon sprite.</summary>
+    /// <summary>Next available photon TransformedPath.</summary>
     int photonIndex;
 
     /**************************** Flying saucer data ****************************/
@@ -168,7 +168,7 @@ namespace Asteroids
     /// <summary>Asteroid speed.</summary>
     int asteroidsSpeed;
 
-    /// <summary>Number of active asteroids.</summary>
+    /// <summary>Number of Active asteroids.</summary>
     int asteroidsLeft;
 
     /**************************** Explosion data ****************************/
@@ -176,7 +176,7 @@ namespace Asteroids
     /// <summary>Time counters for explosions.</summary>
     int[] explosionCounter = new int[MAX_SCRAP];
 
-    /// <summary>Next available explosion sprite.</summary>
+    /// <summary>Next available explosion TransformedPath.</summary>
     int explosionIndex;
 
     //
@@ -235,7 +235,7 @@ namespace Asteroids
       // Generate starry background.
       GenerateStarfield();
 
-      // Create shape for the ship sprite.
+      // Create Shape for the ship TransformedPath.
       ship = new Sprite();
       PointF[] ship_pts = 
       {
@@ -243,10 +243,10 @@ namespace Asteroids
         new PointF(7, 10),
         new PointF(-7, 10)
       };
-      ship.shape.AddPolygon(ship_pts);
-      ship.shape.CloseFigure();
+      ship.Shape.AddPolygon(ship_pts);
+      ship.Shape.CloseFigure();
 
-      // Create shape for the photon sprites.
+      // Create Shape for the photon sprites.
       for (i = 0; i < MAX_SHOTS; i++)
       {
         photons[i] = new Sprite();
@@ -258,11 +258,11 @@ namespace Asteroids
           new PointF(-1, -1)
           
         };
-        photons[i].shape.AddPolygon(photon_pts);
-        photons[i].shape.CloseFigure();
+        photons[i].Shape.AddPolygon(photon_pts);
+        photons[i].Shape.CloseFigure();
       }
 
-      // Create shape for the flying saucer.
+      // Create Shape for the flying saucer.
       ufo = new Sprite();
       PointF[] ufo_pts = 
       {
@@ -277,10 +277,10 @@ namespace Asteroids
         new PointF(10, 5),
         new PointF(-10, 5)
       };
-      ufo.shape.AddPolygon(ufo_pts);
-      ufo.shape.CloseFigure();
+      ufo.Shape.AddPolygon(ufo_pts);
+      ufo.Shape.CloseFigure();
 
-      // Create shape for the guided missle.
+      // Create Shape for the guided missle.
       missle = new Sprite();
       PointF[] missle_pts = 
       {
@@ -293,8 +293,8 @@ namespace Asteroids
         new PointF(-1, -3)
       };
 
-      missle.shape.AddPolygon(missle_pts);
-      missle.shape.CloseFigure();
+      missle.Shape.AddPolygon(missle_pts);
+      missle.Shape.CloseFigure();
 
       // Create asteroid sprites.
       for (i = 0; i < MAX_ROCKS; i++)
@@ -360,8 +360,8 @@ namespace Asteroids
         lock (photons)
         {
           for (i = 0; i < MAX_SHOTS; i++)
-            if (photons[i].active)
-              offGraphics.DrawPath(Pens.White, photons[i].sprite);
+            if (photons[i].Active)
+              offGraphics.DrawPath(Pens.White, photons[i].TransformedPath);
         }
 
         // Draw the guided missle, counter is used to quickly fade color to black when near expiration.
@@ -369,8 +369,8 @@ namespace Asteroids
         penRGB.Color = Color.FromArgb(c, c, c);
         lock (missle)
         {
-          if (missle.active)
-            offGraphics.DrawPath(penRGB, missle.sprite);
+          if (missle.Active)
+            offGraphics.DrawPath(penRGB, missle.TransformedPath);
         }
 
         // Draw the asteroids.
@@ -378,36 +378,36 @@ namespace Asteroids
         {
           foreach (Sprite asteroid in asteroids)
           {
-            if (asteroid.active)
+            if (asteroid.Active)
             {
               if (detail)
-                offGraphics.FillPath(Brushes.Black, asteroid.sprite);
+                offGraphics.FillPath(Brushes.Black, asteroid.TransformedPath);
 
-              offGraphics.DrawPath(Pens.White, asteroid.sprite);
+              offGraphics.DrawPath(Pens.White, asteroid.TransformedPath);
             }
           }
         }
 
         // Draw the flying saucer.
-        if (ufo.active)
+        if (ufo.Active)
         {
           if (detail)
-            offGraphics.DrawPath(Pens.Black, ufo.sprite);
+            offGraphics.DrawPath(Pens.Black, ufo.TransformedPath);
 
-          offGraphics.DrawPath(Pens.White, ufo.sprite);
+          offGraphics.DrawPath(Pens.White, ufo.TransformedPath);
         }
 
         // Draw the ship, counter is used to fade color to white on hyperspace.
         c = 255 - (255 / HYPER_COUNT) * hyperCounter;
         lock (ship)
         {
-          if (ship.active)
+          if (ship.Active)
           {
             if (detail && hyperCounter == 0)
-              offGraphics.DrawPath(Pens.Black, ship.sprite);
+              offGraphics.DrawPath(Pens.Black, ship.TransformedPath);
 
             penRGB.Color = Color.FromArgb(c, c, c);
-            offGraphics.DrawPath(penRGB, ship.sprite);
+            offGraphics.DrawPath(penRGB, ship.TransformedPath);
           }
         }
 
@@ -416,12 +416,12 @@ namespace Asteroids
         {
           for (i = 0; i < MAX_SCRAP; i++)
           {
-            if (explosions[i].active)
+            if (explosions[i].Active)
             {
               c = (255 / SCRAP_COUNT) * explosionCounter[i];
 
               penRGB.Color = Color.FromArgb(c, c, c);
-              offGraphics.DrawPath(penRGB, explosions[i].sprite);
+              offGraphics.DrawPath(penRGB, explosions[i].TransformedPath);
             }
           }
         }
@@ -537,7 +537,7 @@ namespace Asteroids
 
       for (i = 0; i < MAX_ROCKS; i++)
       {
-        // Create a jagged shape for the asteroid and give it a random rotation.
+        // Create a jagged Shape for the asteroid and give it a random rotation.
 
         s = MIN_ROCK_SIDES + (int)(random.NextDouble() * (MAX_ROCK_SIDES - MIN_ROCK_SIDES));
         //s = random.Next(MIN_ROCK_SIDES, MAX_ROCK_SIDES);
@@ -551,42 +551,42 @@ namespace Asteroids
           pts[j].Y = (int)Math.Round(r * Math.Cos(theta));
         }
 
-        asteroids[i].shape.Reset();// = new GraphicsPath();
-        //asteroids[i].shape.addPoint(x, y);
-        asteroids[i].shape.AddPolygon(pts);
-        asteroids[i].active = true;
-        asteroids[i].angle = 0.0;
-        asteroids[i].deltaAngle = (random.NextDouble() - 0.5) / 10;
+        asteroids[i].Shape.Reset();// = new GraphicsPath();
+        //asteroids[i].Shape.addPoint(x, y);
+        asteroids[i].Shape.AddPolygon(pts);
+        asteroids[i].Active = true;
+        asteroids[i].RotationAngle = 0.0;
+        asteroids[i].DeltaAngle = (random.NextDouble() - 0.5) / 10;
 
         // Place the asteroid at one edge of the screen.
 
         if (random.NextDouble() < 0.5)
         {
-          asteroids[i].currentX = -Sprite.Screen.Width / 2;
+          asteroids[i].CurrentX = -Sprite.Screen.Width / 2;
           if (random.NextDouble() < 0.5)
-            asteroids[i].currentX = Sprite.Screen.Width / 2;
-          //asteroids[i].currentY = random.Next() * Sprite.Screen.Height;
-          asteroids[i].currentY = random.Next(Sprite.Screen.Height);
+            asteroids[i].CurrentX = Sprite.Screen.Width / 2;
+          //asteroids[i].CurrentY = random.Next() * Sprite.Screen.Height;
+          asteroids[i].CurrentY = random.Next(Sprite.Screen.Height);
         }
         else
         {
-          //asteroids[i].currentX = random.Next() * Sprite.Screen.Width;
-          asteroids[i].currentX = random.Next(Sprite.Screen.Width);
-          asteroids[i].currentY = -Sprite.Screen.Height / 2;
+          //asteroids[i].CurrentX = random.Next() * Sprite.Screen.Width;
+          asteroids[i].CurrentX = random.Next(Sprite.Screen.Width);
+          asteroids[i].CurrentY = -Sprite.Screen.Height / 2;
           if (random.Next() < 0.5)
-            asteroids[i].currentY = Sprite.Screen.Height / 2;
+            asteroids[i].CurrentY = Sprite.Screen.Height / 2;
         }
 
         // Set a random motion for the asteroid.
 
-        // asteroids[i].deltaX = random.Next() * asteroidsSpeed;
-        asteroids[i].deltaX = random.Next(1, asteroidsSpeed);
+        // asteroids[i].DeltaX = random.Next() * asteroidsSpeed;
+        asteroids[i].DeltaX = random.Next(1, asteroidsSpeed);
         if (random.NextDouble() < 0.5)
-          asteroids[i].deltaX = -asteroids[i].deltaX;
-        // asteroids[i].deltaY = random.Next() * asteroidsSpeed;
-        asteroids[i].deltaY = random.Next(1, asteroidsSpeed);
+          asteroids[i].DeltaX = -asteroids[i].DeltaX;
+        // asteroids[i].DeltaY = random.Next() * asteroidsSpeed;
+        asteroids[i].DeltaY = random.Next(1, asteroidsSpeed);
         if (random.NextDouble() < 0.5)
-          asteroids[i].deltaY = -asteroids[i].deltaY;
+          asteroids[i].DeltaY = -asteroids[i].DeltaY;
 
         asteroids[i].render();
         asteroidIsSmall[i] = false;
@@ -602,24 +602,24 @@ namespace Asteroids
     {
       int i, j;
 
-      // Move any active asteroids and check for collisions.
+      // Move any Active asteroids and check for collisions.
 
       for (i = 0; i < MAX_ROCKS; i++)
       {
-        if (asteroids[i].active)
+        if (asteroids[i].Active)
         {
-          asteroids[i].advance();
+          asteroids[i].Advance();
           asteroids[i].render();
 
-          // If hit by photon, kill asteroid and advance score. If asteroid is large,
+          // If hit by photon, kill asteroid and Advance score. If asteroid is large,
           // make some smaller ones to replace it.
 
           for (j = 0; j < MAX_SHOTS; j++)
-            if (photons[j].active && asteroids[i].active && asteroids[i].isColliding(photons[j]))
+            if (photons[j].Active && asteroids[i].Active && asteroids[i].isColliding(photons[j]))
             {
               asteroidsLeft--;
-              asteroids[i].active = false;
-              photons[j].active = false;
+              asteroids[i].Active = false;
+              photons[j].Active = false;
               explode(asteroids[i]);
               if (!asteroidIsSmall[i])
               {
@@ -632,7 +632,7 @@ namespace Asteroids
 
           // If the ship is not in hyperspace, see if it is hit.
 
-          if (ship.active && hyperCounter <= 0 && asteroids[i].active && asteroids[i].isColliding(ship))
+          if (ship.Active && hyperCounter <= 0 && asteroids[i].Active && asteroids[i].isColliding(ship))
           {
             explode(ship);
             stopShip();
@@ -648,10 +648,10 @@ namespace Asteroids
     {
       for (int i = 0; i < MAX_SCRAP; i++)
       {
-        //explosions[i].shape = new GraphicsPath();
-        explosions[i].shape.Reset();
-        //explosions[i].shape = new Polygon();
-        explosions[i].active = false;
+        //explosions[i].Shape = new GraphicsPath();
+        explosions[i].Shape.Reset();
+        //explosions[i].Shape = new Polygon();
+        explosions[i].Active = false;
         explosionCounter[i] = 0;
       }
       explosionIndex = 0;
@@ -661,76 +661,76 @@ namespace Asteroids
     {
       int c, i, j, k;
 
-      // Create sprites for explosion animation. The each individual line segment of the given sprite
-      // is used to create a new sprite that will move outward  from the sprite's original position
+      // Create sprites for explosion animation. The each individual line segment of the given TransformedPath
+      // is used to create a new TransformedPath that will move outward  from the TransformedPath's original position
       // with a random rotation.
 
       s.render();
       c = 2;
-      if (detail || s.sprite.PathPoints.Length < 6)
+      if (detail || s.TransformedPath.PathPoints.Length < 6)
         c = 1;
 
-      for (i = 0; i < s.sprite.PathPoints.Length; i += c)
+      for (i = 0; i < s.TransformedPath.PathPoints.Length; i += c)
       {
         explosionIndex++;
         if (explosionIndex >= MAX_SCRAP)
           explosionIndex = 0;
-        explosions[explosionIndex].active = true;
+        explosions[explosionIndex].Active = true;
 
         j = i + 1;
-        if (j >= s.sprite.PathPoints.Length)
-          j -= s.sprite.PathPoints.Length;
+        if (j >= s.TransformedPath.PathPoints.Length)
+          j -= s.TransformedPath.PathPoints.Length;
         k = j + 1;
-        if (k >= s.sprite.PathPoints.Length)
-          k -= s.sprite.PathPoints.Length;
+        if (k >= s.TransformedPath.PathPoints.Length)
+          k -= s.TransformedPath.PathPoints.Length;
 
         PointF[] points =
         {
-          new PointF( s.shape.PathPoints[i].X, s.shape.PathPoints[i].Y ),
-          new PointF( s.shape.PathPoints[j].X, s.shape.PathPoints[j].Y ),
-          new PointF( s.shape.PathPoints[k].X, s.shape.PathPoints[k].Y )
+          new PointF( s.Shape.PathPoints[i].X, s.Shape.PathPoints[i].Y ),
+          new PointF( s.Shape.PathPoints[j].X, s.Shape.PathPoints[j].Y ),
+          new PointF( s.Shape.PathPoints[k].X, s.Shape.PathPoints[k].Y )
         };
 
-        //explosions[explosionIndex].shape = new GraphicsPath();
-        explosions[explosionIndex].shape.Reset();
-        explosions[explosionIndex].shape.AddPolygon(points);
-        explosions[explosionIndex].angle = s.angle;
-        explosions[explosionIndex].deltaAngle = (random.NextDouble() * 2 * Math.PI - Math.PI) / 15;
-        explosions[explosionIndex].currentX = s.currentX;
-        explosions[explosionIndex].currentY = s.currentY;
+        //explosions[explosionIndex].Shape = new GraphicsPath();
+        explosions[explosionIndex].Shape.Reset();
+        explosions[explosionIndex].Shape.AddPolygon(points);
+        explosions[explosionIndex].RotationAngle = s.RotationAngle;
+        explosions[explosionIndex].DeltaAngle = (random.NextDouble() * 2 * Math.PI - Math.PI) / 15;
+        explosions[explosionIndex].CurrentX = s.CurrentX;
+        explosions[explosionIndex].CurrentY = s.CurrentY;
 
-        explosions[explosionIndex].deltaX = -s.shape.PathPoints[i].X / 5;
-        explosions[explosionIndex].deltaY = -s.shape.PathPoints[i].Y / 5;
-        //explosions[explosionIndex].deltaX = -s.shape.xpoints[i] / 5;
-        //explosions[explosionIndex].deltaY = -s.shape.ypoints[i] / 5;
+        explosions[explosionIndex].DeltaX = -s.Shape.PathPoints[i].X / 5;
+        explosions[explosionIndex].DeltaY = -s.Shape.PathPoints[i].Y / 5;
+        //explosions[explosionIndex].DeltaX = -s.Shape.xpoints[i] / 5;
+        //explosions[explosionIndex].DeltaY = -s.Shape.ypoints[i] / 5;
         explosionCounter[explosionIndex] = SCRAP_COUNT;
       }
     }
 
     public void updateExplosions()
     {
-      // Move any active explosion debris. Stop explosion when its counter has expired.
+      // Move any Active explosion debris. Stop explosion when its counter has expired.
       for (int i = 0; i < MAX_SCRAP; i++)
       {
-        if (explosions[i].active)
+        if (explosions[i].Active)
         {
-          explosions[i].advance();
+          explosions[i].Advance();
           explosions[i].render();
           if (--explosionCounter[i] < 0)
-            explosions[i].active = false;
+            explosions[i].Active = false;
         }
       }
     }
 
     public void initShip()
     {
-      ship.active = true;
-      ship.angle = 0.0;
-      ship.deltaAngle = 0.0;
-      ship.currentX = 0.0;
-      ship.currentY = 0.0;
-      ship.deltaX = 0.0;
-      ship.deltaY = 0.0;
+      ship.Active = true;
+      ship.RotationAngle = 0.0;
+      ship.DeltaAngle = 0.0;
+      ship.CurrentX = 0.0;
+      ship.CurrentY = 0.0;
+      ship.DeltaX = 0.0;
+      ship.DeltaY = 0.0;
       ship.render();
       hyperCounter = 0;
     }
@@ -746,49 +746,49 @@ namespace Asteroids
 
       if (right)
       {
-        ship.angle += Math.PI / 32.0;
-        if (ship.angle > 2 * Math.PI)
-          ship.angle -= 2 * Math.PI;
+        ship.RotationAngle += Math.PI / 32.0;
+        if (ship.RotationAngle > 2 * Math.PI)
+          ship.RotationAngle -= 2 * Math.PI;
       }
       if (left)
       {
-        ship.angle -= Math.PI / 32.0;
-        if (ship.angle < 0)
-          ship.angle += 2 * Math.PI;
+        ship.RotationAngle -= Math.PI / 32.0;
+        if (ship.RotationAngle < 0)
+          ship.RotationAngle += 2 * Math.PI;
       }
 
       // Fire thrusters if up or down cursor key is down. Don't let ship go past
       // the speed limit.
 
-      dx = Math.Sin(ship.angle);
-      dy = Math.Cos(ship.angle);
+      dx = Math.Sin(ship.RotationAngle);
+      dy = Math.Cos(ship.RotationAngle);
       limit = 0.8 * MIN_ROCK_SIZE;
       if (up)
       {
-        if (ship.deltaX + dx > -limit && ship.deltaX + dx < limit)
-          ship.deltaX += dx;
-        if (ship.deltaY + dy > -limit && ship.deltaY + dy < limit)
-          ship.deltaY += dy;
+        if (ship.DeltaX + dx > -limit && ship.DeltaX + dx < limit)
+          ship.DeltaX += dx;
+        if (ship.DeltaY + dy > -limit && ship.DeltaY + dy < limit)
+          ship.DeltaY += dy;
       }
       if (down)
       {
-        if (ship.deltaX - dx > -limit && ship.deltaX - dx < limit)
-          ship.deltaX -= dx;
-        if (ship.deltaY - dy > -limit && ship.deltaY - dy < limit)
-          ship.deltaY -= dy;
+        if (ship.DeltaX - dx > -limit && ship.DeltaX - dx < limit)
+          ship.DeltaX -= dx;
+        if (ship.DeltaY - dy > -limit && ship.DeltaY - dy < limit)
+          ship.DeltaY -= dy;
       }
 
-      // Move the ship. If it is currently in hyperspace, advance the countdown.
+      // Move the ship. If it is currently in hyperspace, Advance the countdown.
 
-      if (ship.active)
+      if (ship.Active)
       {
-        ship.advance();
+        ship.Advance();
         ship.render();
         if (hyperCounter > 0)
           hyperCounter--;
       }
 
-      // Ship is exploding, advance the countdown or create a new ship if it is
+      // Ship is exploding, Advance the countdown or create a new ship if it is
       // done exploding. The new ship is added as though it were in hyperspace.
       // (This gives the player time to move the ship if it is in imminent danger.)
       // If that was the last ship, end the game.
@@ -810,7 +810,7 @@ namespace Asteroids
 
     public void stopShip()
     {
-      ship.active = false;
+      ship.Active = false;
       shipCounter = SCRAP_COUNT;
       if (shipsLeft > 0)
         shipsLeft--;
@@ -822,7 +822,7 @@ namespace Asteroids
 
       for (i = 0; i < MAX_SHOTS; i++)
       {
-        photons[i].active = false;
+        photons[i].Active = false;
         photonCounter[i] = 0;
       }
       photonIndex = 0;
@@ -832,16 +832,16 @@ namespace Asteroids
     {
       int i;
 
-      // Move any active photons. Stop it when its counter has expired.
+      // Move any Active photons. Stop it when its counter has expired.
 
       for (i = 0; i < MAX_SHOTS; i++)
       {
-        if (photons[i].active)
+        if (photons[i].Active)
         {
-          photons[i].advance();
+          photons[i].Advance();
           photons[i].render();
           if (--photonCounter[i] < 0)
-            photons[i].active = false;
+            photons[i].Active = false;
         }
       }
     }
@@ -849,23 +849,23 @@ namespace Asteroids
     public void initUfo()
     {
       // Randomly set flying saucer at left or right edge of the screen.
-      ufo.active = true;
-      ufo.currentX = -Sprite.Screen.Width / 2;
-      ufo.currentY = random.NextDouble() * Sprite.Screen.Height;
-      ufo.deltaX = MIN_ROCK_SPEED + random.NextDouble() * (MAX_ROCK_SPEED - MIN_ROCK_SPEED);
+      ufo.Active = true;
+      ufo.CurrentX = -Sprite.Screen.Width / 2;
+      ufo.CurrentY = random.NextDouble() * Sprite.Screen.Height;
+      ufo.DeltaX = MIN_ROCK_SPEED + random.NextDouble() * (MAX_ROCK_SPEED - MIN_ROCK_SPEED);
       if (random.NextDouble() < 0.5)
       {
-        ufo.deltaX = -ufo.deltaX;
-        ufo.currentX = Sprite.Screen.Width / 2;
+        ufo.DeltaX = -ufo.DeltaX;
+        ufo.CurrentX = Sprite.Screen.Width / 2;
       }
-      ufo.deltaY = MIN_ROCK_SPEED + random.NextDouble() * (MAX_ROCK_SPEED - MIN_ROCK_SPEED);
+      ufo.DeltaY = MIN_ROCK_SPEED + random.NextDouble() * (MAX_ROCK_SPEED - MIN_ROCK_SPEED);
       if (random.NextDouble() < 0.5)
-        ufo.deltaY = -ufo.deltaY;
+        ufo.DeltaY = -ufo.DeltaY;
       ufo.render();
 
       // Set counter for this pass.
 
-      ufoCounter = (int)Math.Floor(Sprite.Screen.Width / Math.Abs(ufo.deltaX));
+      ufoCounter = (int)Math.Floor(Sprite.Screen.Width / Math.Abs(ufo.DeltaX));
     }
 
     public void updateUfo()
@@ -875,9 +875,9 @@ namespace Asteroids
       // Move the flying saucer and check for collision with a photon. Stop it when its
       // counter has expired.
 
-      if (ufo.active)
+      if (ufo.Active)
       {
-        ufo.advance();
+        ufo.Advance();
         ufo.render();
         if (--ufoCounter <= 0)
           if (--ufoPassesLeft > 0)
@@ -887,7 +887,7 @@ namespace Asteroids
         else
         {
           for (i = 0; i < MAX_SHOTS; i++)
-            if (photons[i].active && ufo.isColliding(photons[i]))
+            if (photons[i].Active && ufo.isColliding(photons[i]))
             {
               explode(ufo);
               stopUfo();
@@ -897,8 +897,8 @@ namespace Asteroids
           // On occassion, fire a missle at the ship if the saucer is not
           // too close to it.
 
-          d = (int)Math.Max(Math.Abs(ufo.currentX - ship.currentX), Math.Abs(ufo.currentY - ship.currentY));
-          if (ship.active && hyperCounter <= 0 && ufo.active && !missle.active &&
+          d = (int)Math.Max(Math.Abs(ufo.CurrentX - ship.CurrentX), Math.Abs(ufo.CurrentY - ship.CurrentY));
+          if (ship.Active && hyperCounter <= 0 && ufo.Active && !missle.Active &&
             d > 4 * MAX_ROCK_SIZE && random.NextDouble() < .03)
             initMissle();
         }
@@ -907,20 +907,20 @@ namespace Asteroids
 
     public void stopUfo()
     {
-      ufo.active = false;
+      ufo.Active = false;
       ufoCounter = 0;
       ufoPassesLeft = 0;
     }
 
     public void initMissle()
     {
-      missle.active = true;
-      missle.angle = 0.0;
-      missle.deltaAngle = 0.0;
-      missle.currentX = ufo.currentX;
-      missle.currentY = ufo.currentY;
-      missle.deltaX = 0.0;
-      missle.deltaY = 0.0;
+      missle.Active = true;
+      missle.RotationAngle = 0.0;
+      missle.DeltaAngle = 0.0;
+      missle.CurrentX = ufo.CurrentX;
+      missle.CurrentY = ufo.CurrentY;
+      missle.DeltaX = 0.0;
+      missle.DeltaY = 0.0;
       missle.render();
       missleCounter = 3 * Math.Max(Sprite.Screen.Width, Sprite.Screen.Height) / MIN_ROCK_SIZE;
     }
@@ -932,23 +932,23 @@ namespace Asteroids
       // Move the guided missle and check for collision with ship or photon. Stop it when its
       // counter has expired.
 
-      if (missle.active)
+      if (missle.Active)
       {
         if (--missleCounter <= 0)
           stopMissle();
         else
         {
           guideMissle();
-          missle.advance();
+          missle.Advance();
           missle.render();
           for (i = 0; i < MAX_SHOTS; i++)
-            if (photons[i].active && missle.isColliding(photons[i]))
+            if (photons[i].Active && missle.isColliding(photons[i]))
             {
               explode(missle);
               stopMissle();
               score += MISSLE_POINTS;
             }
-          if (missle.active && ship.active && hyperCounter <= 0 && ship.isColliding(missle))
+          if (missle.Active && ship.Active && hyperCounter <= 0 && ship.isColliding(missle))
           {
             explode(ship);
             stopShip();
@@ -963,13 +963,13 @@ namespace Asteroids
     {
       double dx, dy, angle;
 
-      if (!ship.active || hyperCounter > 0)
+      if (!ship.Active || hyperCounter > 0)
         return;
 
-      // Find the angle needed to hit the ship.
+      // Find the RotationAngle needed to hit the ship.
 
-      dx = ship.currentX - missle.currentX;
-      dy = ship.currentY - missle.currentY;
+      dx = ship.CurrentX - missle.CurrentX;
+      dy = ship.CurrentY - missle.CurrentY;
       if (dx == 0 && dy == 0)
         angle = 0;
       if (dx == 0)
@@ -988,19 +988,19 @@ namespace Asteroids
           angle = Math.PI - angle;
       }
 
-      // Adjust angle for screen coordinates.
+      // Adjust RotationAngle for screen coordinates.
 
-      missle.angle = angle - Math.PI / 2;
+      missle.RotationAngle = angle - Math.PI / 2;
 
-      // Change the missle's angle so that it points toward the ship.
+      // Change the missle's RotationAngle so that it points toward the ship.
 
-      missle.deltaX = MIN_ROCK_SIZE / 3 * Math.Sin(missle.angle);
-      missle.deltaY = MIN_ROCK_SIZE / 3 * Math.Cos(missle.angle);
+      missle.DeltaX = MIN_ROCK_SIZE / 3 * Math.Sin(missle.RotationAngle);
+      missle.DeltaY = MIN_ROCK_SIZE / 3 * Math.Cos(missle.RotationAngle);
     }
 
     public void stopMissle()
     {
-      missle.active = false;
+      missle.Active = false;
       missleCounter = 0;
     }
 
@@ -1014,15 +1014,15 @@ namespace Asteroids
 
       // Create one or two smaller asteroids from a larger one using inactive asteroids. The new
       // asteroids will be placed in the same position as the old one but will have a new, smaller
-      // shape and new, randomly generated movements.
+      // Shape and new, randomly generated movements.
 
       count = 0;
       i = 0;
-      tempX = asteroids[n].currentX;
-      tempY = asteroids[n].currentY;
+      tempX = asteroids[n].CurrentX;
+      tempY = asteroids[n].CurrentY;
       do
       {
-        if (!asteroids[i].active)
+        if (!asteroids[i].Active)
         {
           s = MIN_ROCK_SIDES + (int)(random.NextDouble() * (MAX_ROCK_SIDES - MIN_ROCK_SIDES));
           //s = random.Next(MIN_ROCK_SIDES, MAX_ROCK_SIDES);
@@ -1034,18 +1034,18 @@ namespace Asteroids
             //r = random.Next(MIN_ROCK_SIZE, MAX_ROCK_SIZE)/4;
             points[j].X = (int)-Math.Round(r * Math.Sin(theta));
             points[j].Y = (int)Math.Round(r * Math.Cos(theta));
-            //asteroids[i].shape.addPoint(x, y);
+            //asteroids[i].Shape.addPoint(x, y);
           }
-          //asteroids[i].shape = new GraphicsPath();
-          asteroids[i].shape.Reset();
-          asteroids[i].shape.AddPolygon(points);
-          asteroids[i].active = true;
-          asteroids[i].angle = 0.0;
-          asteroids[i].deltaAngle = (random.NextDouble() - 0.5) / 10;
-          asteroids[i].currentX = tempX;
-          asteroids[i].currentY = tempY;
-          asteroids[i].deltaX = random.NextDouble() * 2 * asteroidsSpeed - asteroidsSpeed;
-          asteroids[i].deltaY = random.NextDouble() * 2 * asteroidsSpeed - asteroidsSpeed;
+          //asteroids[i].Shape = new GraphicsPath();
+          asteroids[i].Shape.Reset();
+          asteroids[i].Shape.AddPolygon(points);
+          asteroids[i].Active = true;
+          asteroids[i].RotationAngle = 0.0;
+          asteroids[i].DeltaAngle = (random.NextDouble() - 0.5) / 10;
+          asteroids[i].CurrentX = tempX;
+          asteroids[i].CurrentY = tempY;
+          asteroids[i].DeltaX = random.NextDouble() * 2 * asteroidsSpeed - asteroidsSpeed;
+          asteroids[i].DeltaY = random.NextDouble() * 2 * asteroidsSpeed - asteroidsSpeed;
           asteroids[i].render();
           asteroidIsSmall[i] = true;
           count++;
@@ -1072,30 +1072,30 @@ namespace Asteroids
 
       // Spacebar: fire a photon and start its counter.
 
-      if (e.KeyCode == Keys.Space && ship.active)
+      if (e.KeyCode == Keys.Space && ship.Active)
       {
         photonIndex++;
         if (photonIndex >= MAX_SHOTS)
           photonIndex = 0;
-        photons[photonIndex].active = true;
-        photons[photonIndex].currentX = ship.currentX;
-        photons[photonIndex].currentY = ship.currentY;
+        photons[photonIndex].Active = true;
+        photons[photonIndex].CurrentX = ship.CurrentX;
+        photons[photonIndex].CurrentY = ship.CurrentY;
 
-        photons[photonIndex].deltaX = MIN_ROCK_SIZE * Math.Sin(ship.angle);
-        photons[photonIndex].deltaY = MIN_ROCK_SIZE * Math.Cos(ship.angle);
+        photons[photonIndex].DeltaX = MIN_ROCK_SIZE * Math.Sin(ship.RotationAngle);
+        photons[photonIndex].DeltaY = MIN_ROCK_SIZE * Math.Cos(ship.RotationAngle);
         photonCounter[photonIndex] = Math.Min(Sprite.Screen.Width, Sprite.Screen.Height) / MIN_ROCK_SIZE;
       }
 
-      // 'H' key: warp ship into hyperspace by moving to a random location and starting counter.
+      // 'H' key: warp ship into hyperspace by moving to a random _location and starting counter.
 
-      if (e.KeyCode == Keys.H && ship.active && hyperCounter <= 0)
+      if (e.KeyCode == Keys.H && ship.Active && hyperCounter <= 0)
       {
-        ship.currentX = random.NextDouble() * Sprite.Screen.Width;
-        ship.currentX = random.NextDouble() * Sprite.Screen.Height;
+        ship.CurrentX = random.NextDouble() * Sprite.Screen.Width;
+        ship.CurrentX = random.NextDouble() * Sprite.Screen.Height;
         hyperCounter = HYPER_COUNT;
       }
 
-      // 'P' key: toggle pause mode and start or stop any active looping sound clips.
+      // 'P' key: toggle pause mode and start or stop any Active looping sound clips.
 
       if (e.KeyCode == Keys.P)
       {
@@ -1277,7 +1277,7 @@ namespace Asteroids
     }
 
     /// <summary>
-    /// Check the score and advance high score, add a new ship 
+    /// Check the score and Advance high score, add a new ship 
     /// or start the flying saucer as necessary.
     /// </summary>
     private void ProcessStats()
@@ -1291,7 +1291,7 @@ namespace Asteroids
         shipsLeft++;
       }
 
-      if (playing && score > newUfoScore && !ufo.active)
+      if (playing && score > newUfoScore && !ufo.Active)
       {
         newUfoScore += NEW_UFO_POINTS;
         ufoPassesLeft = UFO_PASSES;

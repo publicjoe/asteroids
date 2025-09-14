@@ -1,5 +1,3 @@
-using System;
-
 namespace Publicjoe.Windows
 {
   /// <summary>
